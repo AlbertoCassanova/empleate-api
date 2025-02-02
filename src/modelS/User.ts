@@ -1,5 +1,5 @@
 import { Sequelize, DataTypes, } from 'sequelize';
-import { sequelize } from '../db.js';
+import { sequelize } from '../db.ts';
 
 export const User = sequelize.define(
     'usuarios',
@@ -9,6 +9,14 @@ export const User = sequelize.define(
             allowNull: false,
         },
         password: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        nombre: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        apellido: {
             type: DataTypes.STRING,
             allowNull: true
         },
