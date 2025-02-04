@@ -9,9 +9,6 @@ export const typeDefs = `#graphql
     code: Int,
     msg: String
   }
-  
-  
-  
   type Query {
     user(email: String, password: String): [User]
   }
@@ -20,5 +17,8 @@ export const typeDefs = `#graphql
     password: String,
     nombre: String,
     apellido: String
+  }
+  type Mutation {
+    createUser(email: String, password: String): [Message]
   }
 `; 
