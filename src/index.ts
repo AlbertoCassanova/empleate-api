@@ -7,6 +7,9 @@ import { resolvers } from './graphql/resolvers.ts';
 const server = new ApolloServer({
     typeDefs,
     resolvers,
+    cors: {
+        origin : ["https://empleate-front.netlify.app/"]
+    }
 });
 
 try {
@@ -14,6 +17,7 @@ try {
     console.log('Connection has been established successfully.');
     const { url } = await startStandaloneServer(server, {
         listen: { port: 4000 },
+        
     });
     console.log(`🚀  Server ready at: ${url}`);
 } catch (error) {
