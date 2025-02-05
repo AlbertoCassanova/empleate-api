@@ -1,22 +1,38 @@
 import { ApolloServer } from '@apollo/server';
-import { startStandaloneServer } from '@apollo/server/standalone';
+import { expressMiddleware } from '@apollo/server/express4';
 import { typeDefs } from './graphql/typedefs.ts';
 import { sequelize } from './db.ts';
 import { resolvers } from './graphql/resolvers.ts';
+import cors from "cors";
+import express from "express";
 
 const server = new ApolloServer({
     typeDefs,
     resolvers,
 });
 
-try {
+const app = express();
+
+app.use(express.json());
+app.use(
+    cors({
+        origin: "*",
+        methods: ["GET", "POST", "PUT", "DELETE",],
+        allowedHeaders: ["Content-Type", "Authorization"],
+    })
+);
+
+const startServer = async () => {
     await sequelize.authenticate();
-    console.log('Connection has been established successfully.');
-    const { url } = await startStandaloneServer(server, {
-        listen: { port: 4000 },
-        
+    await server.start();
+    app.use("/graphql", expressMiddleware(server))
+    app.listen(4000, () => {
+        console.log("Servidor GraphQL listo en http://localhost:4000/graphql");
     });
-    console.log(`🚀  Server ready at: ${url}`);
+};
+
+try {
+    startServer();
 } catch (error) {
     console.error('Unable to connect to the database:', error);
 }

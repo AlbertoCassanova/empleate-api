@@ -19,7 +19,7 @@ export const validateSignUp = (email: string, nombre: string, apellido: string) 
         } else {
             return {
                 validation: true,
-                msg: 'OK!'
+                msg: 'OK'
             }
         }
     }

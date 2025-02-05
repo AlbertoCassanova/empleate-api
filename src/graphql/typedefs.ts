@@ -8,9 +8,10 @@ export const typeDefs = `#graphql
   type Message {
     code: Int,
     msg: String
+    token: String
   }
   type Query {
-    user(email: String, password: String): [User]
+    user(email: String, password: String): [Message]
   }
   type User {
     email: String
@@ -19,6 +20,6 @@ export const typeDefs = `#graphql
     apellido: String
   }
   type Mutation {
-    createUser(email: String, password: String): [Message]
+    createUser(nombre: String, apellido: String, email: String, password: String): [Message]
   }
 `; 

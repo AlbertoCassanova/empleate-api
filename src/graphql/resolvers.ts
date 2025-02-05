@@ -1,4 +1,5 @@
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { validateSignUp } from '../utils/validator.ts';
 import { User } from '../modelS/User.ts';
 
@@ -9,52 +10,74 @@ export type UserType = {
     apellido: string
 }
 
-export type DataType = {
-    user?: UserType
-}
-
 export const resolvers = {
     Query: {
         async user(_:any, { email, password } : UserType){
-            console.log(email);
-            return await User.findAll({
+            const user = await User.findOne({
                 where: {
                     email: email,
-                    password: password
                 }
             })
+            const compare = bcrypt.compareSync(password, user?.dataValues.password);
+            if (compare) {
+                let token = jwt.sign({ 
+                    nombre: user?.dataValues.nombre,
+                    apellido: user?.dataValues.apellido,
+                    email: user?.dataValues.email,
+                    rol: user?.dataValues.rol
+                }, 'empleate.secret.key.login.authentification');
+                return [{
+                    msg: "OK",
+                    code: 200,
+                    token: token
+                }]
+            }
+            else {
+                return [{
+                    msg: "ERROR",
+                    code: 400,
+                    token: 0
+                }]
+            }
         },
     },
     Mutation: {
-        async createUser(_ : any, data: DataType){
-            const { user } = data;
-            if (user) {
-                const result = validateSignUp(user.email, user.nombre, user.apellido);
+        async createUser(_ : any, data: UserType){
+            if (data) {
+                const result = validateSignUp(data.email, data.nombre, data.apellido);
                 if (result) {
-                    const hash = bcrypt.hashSync(user.password, 10);
-                    console.log(hash);
-                    await User.create({
-                        email: user.email,
-                        password: user.password,
-                        nombre: user.nombre,
-                        apellido: user.apellido
-                    });
-                    return {
-                        code: 200,
-                        msg: result.msg
+                    const hash = bcrypt.hashSync(data.password, 10);
+                    const count = await User.count();
+                    try {
+                        await User.create({
+                            email: data.email,
+                            password: hash,
+                            nombre: data.nombre,
+                            apellido: data.apellido,
+                            rol: count == 0 ? "admin" : "client"
+                        })
+                        return [{
+                            code: 200,
+                            msg: result.msg
+                        }]
+                    } catch (error : any) {
+                        return [{
+                            code: 400,
+                            msg: error.errors[0].message
+                        }]
                     }
                 }
                 else {
-                    return {
+                    return [{
                         code: 400,
-                        msg: result.msg
-                    }
+                        msg: "ERROR"
+                    }]
                 }
             } else {
-                return {
+                return [{
                     code: 400,
                     msg: "ERROR"
-                }
+                }]
             }
         }
     }

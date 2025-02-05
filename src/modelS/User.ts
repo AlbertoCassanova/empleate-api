@@ -1,4 +1,4 @@
-import { Sequelize, DataTypes, } from 'sequelize';
+import { DataTypes, } from 'sequelize';
 import { sequelize } from '../db.ts';
 
 export const User = sequelize.define(
@@ -7,6 +7,7 @@ export const User = sequelize.define(
         email: {
             type: DataTypes.STRING,
             allowNull: false,
+            unique: true
         },
         password: {
             type: DataTypes.STRING,
@@ -20,6 +21,10 @@ export const User = sequelize.define(
             type: DataTypes.STRING,
             allowNull: true
         },
+        rol: {
+            type: DataTypes.STRING,
+            allowNull: false
+        }
     },
     {
         timestamps: false,
