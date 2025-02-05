@@ -7,9 +7,6 @@ import { resolvers } from './graphql/resolvers.ts';
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    cors: {
-        origin : ["https://empleate-front.netlify.app/"]
-    }
 });
 
 try {
