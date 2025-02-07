@@ -1,8 +1,7 @@
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
-import { typeDefs } from './graphql/typedefs.ts';
 import { sequelize } from './db.ts';
-import { resolvers } from './graphql/resolvers.ts';
+import { resolvers, typeDefs } from './graphql/index.ts';
 import cors from "cors";
 import express from "express";
 
