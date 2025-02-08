@@ -1,9 +1,9 @@
 export const userTypeDefs = `#graphql
-    input inputUser {
-        email: String
-        password: String,
-        nombre: String,
-        apellido: String
+    input updateUserData {
+        fechaNacimiento: String,
+        documento: String,
+        sexo: String,
+        telefono: String
     }
     type Query {
         loginUser(email: String, password: String): [Message],
@@ -12,9 +12,12 @@ export const userTypeDefs = `#graphql
     type User {
         email: String,
         nombre: String,
-        apellido: String
+        apellido: String,
+        sexo: String,
+        editado: Boolean
     }
     type Mutation {
         createUser(nombre: String, apellido: String, email: String, password: String): [Message]
+        updateUser(token: String, newData: updateUserData): [Message]
     }
 `; 

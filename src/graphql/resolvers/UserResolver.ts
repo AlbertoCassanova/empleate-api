@@ -7,12 +7,14 @@ export type UserType = {
     email: string,
     password: string,
     nombre: string,
-    apellido: string
+    apellido: string,
+    sexo?: string,
+    editado?: boolean
 }
 
 export const userResolvers = {
     Query: {
-        async loginUser(_:any, { email, password } : UserType){
+        async loginUser(_:any, { email, password } : UserType){       
             const user = await User.findOne({where:{email: email,}});
             const compare = bcrypt.compareSync(password, user?.dataValues.password);
             if (compare) {
@@ -48,15 +50,23 @@ export const userResolvers = {
                 {
                     email: user?.dataValues.email,
                     nombre: user?.dataValues.nombre,
-                    apellido: user?.dataValues.apellido
+                    apellido: user?.dataValues.apellido,
+                    sexo: user?.dataValues.sexo,
+                    editado: user?.dataValues.editado
                 }
             ]
         }
     },
     Mutation: {
-        async createUser(_ : any, data: UserType){
+        async createUser(_ : any, data: UserType, { req } : any){
             if (data) {
                 const result = validateSignUp(data.email, data.nombre, data.apellido);
+                let sesionIp = [
+                    {
+                        ip: req.clientIp,
+                        fecha: new Date()
+                    }
+                ]
                 if (result) {
                     const hash = bcrypt.hashSync(data.password, 10);
                     const count = await User.count();
@@ -66,7 +76,9 @@ export const userResolvers = {
                             password: hash,
                             nombre: data.nombre,
                             apellido: data.apellido,
-                            rol: count == 0 ? "admin" : "client"
+                            rol: count == 0 ? "admin" : "client",
+                            editado: false,
+                            direccionIp: JSON.stringify(sesionIp)
                         })
                         return [{
                             code: 200,
@@ -90,6 +102,31 @@ export const userResolvers = {
                     code: 400,
                     msg: "ERROR"
                 }]
+            }
+        },
+        async updateUser(_: any, data: any){
+            const tokenDecoded : any = jwt.decode(data.token);
+            const rs = await User.update(
+                {
+                    fechaNacimiento: data.newData.fechaNacimiento,
+                    documento: data.newData.documento,
+                    sexo: data.newData.sexo,
+                    telefono: data.newData.telefono,
+                    editado: true
+                },
+                {where: {id: tokenDecoded.id}}
+            )
+            if (rs) {
+                return [{
+                    code: 200,
+                    msg: "OK"
+                }]   
+            }
+            else {
+                return [{
+                    code: 400,
+                    msg: "OK"
+                }]   
             }
         }
     }

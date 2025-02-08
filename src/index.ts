@@ -3,6 +3,7 @@ import { expressMiddleware } from '@apollo/server/express4';
 import { sequelize } from './db.ts';
 import { resolvers, typeDefs } from './graphql/index.ts';
 import cors from "cors";
+import requestIp from 'request-ip';
 import express from "express";
 
 const server = new ApolloServer({
@@ -12,6 +13,7 @@ const server = new ApolloServer({
 
 const app = express();
 
+app.use(requestIp.mw())
 app.use(express.json());
 app.use(
     cors({
@@ -24,7 +26,9 @@ app.use(
 const startServer = async () => {
     await sequelize.authenticate();
     await server.start();
-    app.use("/graphql", expressMiddleware(server))
+    app.use("/graphql", expressMiddleware(server, {
+        context: async ({ req }) => ({ req: req }),
+    }))
     app.listen(4000, () => {
         console.log("Servidor GraphQL listo en http://localhost:4000/graphql");
     });
