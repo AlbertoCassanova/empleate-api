@@ -2,6 +2,10 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { validateSignUp } from '../../utils/validator.ts';
 import { User } from '../../modelS/User.ts';
+import GraphQLUpload from 'graphql-upload/GraphQLUpload.mjs';
+import path from 'path';
+import { createWriteStream, existsSync, mkdirSync } from 'fs';
+import { randomUUID } from 'crypto';
 
 export type UserType = {
     email: string,
@@ -13,6 +17,7 @@ export type UserType = {
 }
 
 export const userResolvers = {
+    Upload: GraphQLUpload,
     Query: {
         async loginUser(_:any, { email, password } : UserType){       
             const user = await User.findOne({where:{email: email,}});
@@ -52,7 +57,9 @@ export const userResolvers = {
                     nombre: user?.dataValues.nombre,
                     apellido: user?.dataValues.apellido,
                     sexo: user?.dataValues.sexo,
-                    editado: user?.dataValues.editado
+                    editado: user?.dataValues.editado,
+                    fotoPerfil: user?.dataValues.fotoPerfil,
+                    id: user?.dataValues.id
                 }
             ]
         }
@@ -113,6 +120,46 @@ export const userResolvers = {
                     sexo: data.newData.sexo,
                     telefono: data.newData.telefono,
                     editado: true
+                },
+                {where: {id: tokenDecoded.id}}
+            )
+            if (rs) {
+                return [{
+                    code: 200,
+                    msg: "OK"
+                }]   
+            }
+            else {
+                return [{
+                    code: 400,
+                    msg: "OK"
+                }]   
+            }
+        },
+        async updaetProfilePhoto(_ : any, data: any){
+            const file = await data.file;
+            const token = data.token;
+            const tokenDecoded : any = jwt.decode(token);
+            
+            const { createReadStream, filename, mimetype } = await file;
+            const stream = createReadStream();
+            const dirname = path.resolve(path.dirname(''));
+            const uploadDir = path.join(dirname, `./media/${tokenDecoded.id}`);
+            if (!existsSync(uploadDir)) {
+                mkdirSync(uploadDir, { recursive: true });
+            }
+            const extension = path.extname(filename);
+            const newFilename = `${randomUUID()}${extension}`;
+            const filePath = path.join(uploadDir, newFilename);
+            await new Promise((resolve, reject) => {
+                const writeStream = createWriteStream(filePath);
+                stream.pipe(writeStream);
+                writeStream.on("finish", resolve);
+                writeStream.on("error", reject);
+            });
+            const rs = await User.update(
+                {
+                    fotoPerfil: newFilename
                 },
                 {where: {id: tokenDecoded.id}}
             )

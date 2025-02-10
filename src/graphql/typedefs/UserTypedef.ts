@@ -1,4 +1,11 @@
 export const userTypeDefs = `#graphql
+    scalar Upload
+
+    type File {
+        filename: String!
+        mimetype: String!
+        encoding: String!
+    }
     input updateUserData {
         fechaNacimiento: String,
         documento: String,
@@ -14,10 +21,13 @@ export const userTypeDefs = `#graphql
         nombre: String,
         apellido: String,
         sexo: String,
-        editado: Boolean
+        editado: Boolean,
+        fotoPerfil: String
+        id: Int
     }
     type Mutation {
         createUser(nombre: String, apellido: String, email: String, password: String): [Message]
         updateUser(token: String, newData: updateUserData): [Message]
+        updaetProfilePhoto(token: String, file: Upload!): [Message]!
     }
 `; 

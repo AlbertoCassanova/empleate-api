@@ -5,13 +5,18 @@ import { resolvers, typeDefs } from './graphql/index.ts';
 import cors from "cors";
 import requestIp from 'request-ip';
 import express from "express";
+import graphqlUploadExpress from "graphql-upload/graphqlUploadExpress.mjs";
+import mediaRoutes from "./routes/media.router.ts"
+
+const app = express();
+
+app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 5 }));
 
 const server = new ApolloServer({
     typeDefs,
     resolvers,
+    csrfPrevention: false,
 });
-
-const app = express();
 
 app.use(requestIp.mw())
 app.use(express.json());
@@ -22,6 +27,7 @@ app.use(
         allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
+app.use("/media", mediaRoutes);
 
 const startServer = async () => {
     await sequelize.authenticate();

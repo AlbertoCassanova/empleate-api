@@ -1,3 +1,5 @@
+csrf:
+  unsafe_disabled: true
 #
 # CORS (Cross Origin Resource Sharing)
 #
