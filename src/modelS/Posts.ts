@@ -1,8 +1,8 @@
 import { DataTypes, } from 'sequelize';
 import { sequelize } from '../db.ts';
 
-const Negocios = sequelize.define(
-    'negocios',
+export const Posts = sequelize.define(
+    'posts',
     {
         id: {
             type: DataTypes.BIGINT.UNSIGNED,
@@ -11,8 +11,8 @@ const Negocios = sequelize.define(
             primaryKey: true,
             autoIncrement: true,
         },
-        nombre: {
-            type: DataTypes.STRING,
+        contenido: {
+            type: DataTypes.TEXT,
             allowNull: false
         },
         creadoPor: {
@@ -21,23 +21,16 @@ const Negocios = sequelize.define(
             references: {
                 model: "usuarios",
                 key: "id"
-            },
-            onUpdate: 'CASCADE',
-            onDelete: 'CASCADE'
+            }
         },
-        verificado: {
-            type: DataTypes.BOOLEAN,
+        numeroComentarios: {
+            type: DataTypes.BIGINT.UNSIGNED,
             allowNull: false,
-            defaultValue: false
-        },
-        latitude: {
-            type: DataTypes.DOUBLE
+            defaultValue: 0
         }
     },
     {
-        timestamps: true,
-        tableName: 'negocios'
+        tableName: 'Posts',
+        timestamps: true
     }
 );
-
-export { Negocios };

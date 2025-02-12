@@ -1,11 +1,20 @@
+// Encrypt utils
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { validateSignUp } from '../../utils/validator.ts';
-import { User } from '../../modelS/User.ts';
-import GraphQLUpload from 'graphql-upload/GraphQLUpload.mjs';
+import { randomUUID } from 'crypto';
+
+// Utils
 import path from 'path';
 import { createWriteStream, existsSync, mkdirSync } from 'fs';
-import { randomUUID } from 'crypto';
+import { validateSignUp } from '../../utils/validator.ts';
+
+// Graphql
+import GraphQLUpload from 'graphql-upload/GraphQLUpload.mjs';
+
+// Models
+import "../../modelS/Relationships.ts"
+import { User } from '../../modelS/User.ts';
+import { Negocios } from '../../modelS/Negocios.ts';
 
 export type UserType = {
     email: string,
@@ -49,8 +58,10 @@ export const userResolvers = {
             const user = await User.findOne({
                 where: {
                     id: tokenDecoded.id,
-                }
+                },
+                include: Negocios
             });
+            
             return [
                 {
                     email: user?.dataValues.email,
@@ -59,7 +70,13 @@ export const userResolvers = {
                     sexo: user?.dataValues.sexo,
                     editado: user?.dataValues.editado,
                     fotoPerfil: user?.dataValues.fotoPerfil,
-                    id: user?.dataValues.id
+                    id: user?.dataValues.id,
+                    fechaNacimiento: user?.dataValues.fechaNacimiento,
+                    telefono: user?.dataValues.telefono,
+                    negocios: {
+                        cantidad: user?.dataValues.negocios.length,
+                        negocio: [user?.dataValues.negocios[0].dataValues]
+                    }
                 }
             ]
         }
@@ -85,7 +102,8 @@ export const userResolvers = {
                             apellido: data.apellido,
                             rol: count == 0 ? "admin" : "client",
                             editado: false,
-                            direccionIp: JSON.stringify(sesionIp)
+                            direccionIp: JSON.stringify(sesionIp),
+                            verificado: true
                         })
                         return [{
                             code: 200,

@@ -24,6 +24,9 @@ export const userTypeDefs = `#graphql
         editado: Boolean,
         fotoPerfil: String
         id: Int
+        negocios: Negocios,
+        fechaNacimiento: String,
+        telefono: String
     }
     type Mutation {
         createUser(nombre: String, apellido: String, email: String, password: String): [Message]

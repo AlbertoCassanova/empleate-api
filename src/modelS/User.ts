@@ -1,7 +1,8 @@
 import { DataTypes, } from 'sequelize';
 import { sequelize } from '../db.ts';
+import { Negocios } from './Negocios.ts';
 
-export const User = sequelize.define(
+const User = sequelize.define(
     'usuarios',
     {
         id: {
@@ -77,12 +78,17 @@ export const User = sequelize.define(
         fotoPerfil: {
             type: DataTypes.TEXT,
             allowNull: true
+        },
+        verificado: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
         }
     },
     {
         timestamps: false,
         tableName: 'usuarios'
     }
-);
+)
 
-console.log(User === sequelize.models.User); // true
+export { User }
