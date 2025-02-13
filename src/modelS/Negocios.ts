@@ -31,7 +31,12 @@ const Negocios = sequelize.define(
             defaultValue: false
         },
         latitude: {
-            type: DataTypes.DOUBLE
+            type: DataTypes.DOUBLE,
+            allowNull: true
+        },
+        longitude: {
+            type: DataTypes.DOUBLE,
+            allowNull: true
         }
     },
     {

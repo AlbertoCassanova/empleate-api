@@ -16,5 +16,6 @@ export const negociosTypeDefs = `#graphql
     }
     type Mutation {
         createNegocio(token: String, negocio: NegocioInput): [Message]
+        updateNegocioLocation(token: String,businessId:Int,latitude: Float, longitude: Float): [Message]
     }
 `

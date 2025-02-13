@@ -22,15 +22,33 @@ export const negociosResolvers = {
     Mutation: {
         async createNegocio(_ : any, { token, negocio }: any){
             const tokenDecoded = decodeJwt(token);
-            const crearNegocio = await Negocios.create({
+            await Negocios.create({
                 nombre: negocio.nombre,
                 creadoPor: tokenDecoded.id,
                 verificado: false
             })
-            console.log(crearNegocio);
             return [{
                 code: 200
             }]
+        },
+        async updateNegocioLocation(_: any, { token, businessId, latitude, longitude }: any) {
+            const tokenDecoded = decodeJwt(token);
+            const buscarNgocio = await Negocios.findOne({ where: { id: businessId }});
+            if (buscarNgocio?.dataValues.creadoPor == tokenDecoded.id) {
+                const rs = await Negocios.update({
+                    latitude: latitude,
+                    longitude: longitude
+                }, { where: { id: businessId}});
+                return [{
+                    code: 200
+                }]
+            }
+            else {
+                return [{
+                    code: 400,
+                    msg: "Ha ocurrido un error"
+                }]
+            }
         }
     }
 }
