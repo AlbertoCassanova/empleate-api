@@ -61,9 +61,7 @@ export const userResolvers = {
                 },
                 include: Negocios
             });
-            
-            return [
-                {
+            return {
                     email: user?.dataValues.email,
                     nombre: user?.dataValues.nombre,
                     apellido: user?.dataValues.apellido,
@@ -74,11 +72,10 @@ export const userResolvers = {
                     fechaNacimiento: user?.dataValues.fechaNacimiento,
                     telefono: user?.dataValues.telefono,
                     negocios: {
-                        cantidad: user?.dataValues.negocios.length,
-                        negocio: [user?.dataValues.negocios[0].dataValues]
+                        cantidad: user?.dataValues != undefined ? user?.dataValues.negocios.length : null,
+                        negocio: []
                     }
                 }
-            ]
         }
     },
     Mutation: {

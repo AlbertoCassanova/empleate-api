@@ -14,7 +14,7 @@ export const userTypeDefs = `#graphql
     }
     type Query {
         loginUser(email: String, password: String): [Message],
-        getUserInfo(token: String): [User],
+        getUserInfo(token: String): User,
     }
     type User {
         email: String,
