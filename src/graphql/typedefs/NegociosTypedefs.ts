@@ -6,6 +6,8 @@ export const negociosTypeDefs = `#graphql
         id: Int
         nombre: String
         verificado: Boolean
+        latitude: Float
+        longitude: Float
     }
     type Negocios {
         cantidad: Int

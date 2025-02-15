@@ -12,10 +12,9 @@ export const negociosResolvers = {
                 where:{creadoPor:tokenDecoded.id},
                 include: User
             });
-            console.log(negocios[0].dataValues)
             return [{
                 cantidad: negocios.length,
-                negocio: [negocios[0].dataValues]
+                negocio: negocios.length != 0 ?[negocios[0].dataValues] : []
             }]
         }
     },
